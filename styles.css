@@ -1557,16 +1557,6 @@ visibility: visible !important;
 opacity: 1 !important;
 }
 
-/* Hide the original inicio screen when on landing page */
-body:not(.system-active) #inicio {
-display: none !important;
-}
-
-/* Ensure inicio screen is visible when active and in system */
-body.system-active #inicio.ativa {
-display: block !important;
-}
-
 .tela { display: none; } .ativa { display: block; animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 

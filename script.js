@@ -2,24 +2,24 @@
 console.log('Script carregado com sucesso');
 
 // Declarar as funções no escopo global explicitamente
-window.showSystem = function(targetScreen = 'inicio') {
+window.showSystem = function(targetScreen = 'loginProfessor') {
     console.log('showSystem chamado com:', targetScreen);
-    
+
     const landing = document.querySelector('.netflix-landing');
     const container = document.querySelector('.container');
-    
+
     if (!landing || !container) {
         console.error('Elementos necessários não encontrados', { landing, container });
         return;
     }
-    
+
     document.body.classList.add('system-active');
-    
+
     // Forçar estilos inline para garantir funcionamento
     landing.style.display = 'none';
     landing.style.visibility = 'hidden';
     landing.style.opacity = '0';
-    
+
     container.style.display = 'flex';
     container.style.position = 'fixed';
     container.style.top = '0';
@@ -32,7 +32,7 @@ window.showSystem = function(targetScreen = 'inicio') {
     container.style.background = 'var(--netflix-dark)';
     container.style.padding = '0';
     container.style.overflow = 'hidden';
-    
+
     const card = container.querySelector('.card');
     if (card) {
         card.style.maxHeight = '100vh';
@@ -41,36 +41,30 @@ window.showSystem = function(targetScreen = 'inicio') {
         card.style.height = '100vh';
         card.style.overflowY = 'auto';
     }
-    
+
     console.log('Landing page ocultada, container exibido em tela cheia');
-    
+
     // Show the specific screen from the original system
-    if (targetScreen !== 'inicio') {
-        console.log('Navegando para tela:', targetScreen);
-        mostrarTela(targetScreen);
-    } else {
-        console.log('Mostrando tela inicio');
-        mostrarTela('inicio');
-    }
+    console.log('Navegando para tela:', targetScreen);
+    mostrarTela(targetScreen);
 };
 
 window.voltarParaLanding = function() {
     const landing = document.querySelector('.netflix-landing');
     const container = document.querySelector('.container');
-    const inicio = document.getElementById('inicio');
-    
-    if (!landing || !container || !inicio) {
+
+    if (!landing || !container) {
         console.error('Elementos necessários não encontrados');
         return;
     }
-    
+
     document.body.classList.remove('system-active');
-    
+
     // Reset estilos inline da landing
     landing.style.display = '';
     landing.style.visibility = '';
     landing.style.opacity = '';
-    
+
     // Reset estilos inline do container
     container.style.display = '';
     container.style.position = '';
@@ -84,7 +78,7 @@ window.voltarParaLanding = function() {
     container.style.background = '';
     container.style.padding = '';
     container.style.overflow = '';
-    
+
     // Reset estilos inline do card
     const card = container.querySelector('.card');
     if (card) {
@@ -94,10 +88,9 @@ window.voltarParaLanding = function() {
         card.style.height = '';
         card.style.overflowY = '';
     }
-    
-    // Reset to initial screen
+
+    // Reset all screens
     document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    inicio.classList.add('ativa');
 };
 
 window.toggleFaq = function(element) {
@@ -114,18 +107,18 @@ window.voltarParaTelaInicial = function() {
     // Limpa qualquer estado de autenticação ou acesso
     grupoAtual = "";
     isProfLogado = false;
-    
+
     // Garante que está no sistema
     const landing = document.querySelector('.netflix-landing');
     const container = document.querySelector('.container');
-    
+
     if (landing && container) {
         document.body.classList.add('system-active');
         landing.style.display = 'none';
         container.style.display = 'flex';
-        
-        // Navega explicitamente para a tela inicial
-        mostrarTela('inicio');
+
+        // Navega para o login do professor como tela padrão
+        mostrarTela('loginProfessor');
     }
 };
 
@@ -204,13 +197,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. VERIFICA EM QUAL TELA ESTÁVAMOS ANTES DE ATUALIZAR
     let hashTela = window.location.hash.replace('#', '');
-    let telaDestino = 'inicio';
+    let telaDestino = 'loginProfessor';
 
     if (hashTela && document.getElementById(hashTela)) {
         // Se tentar acessar área de aluno sem grupo logado na sessão, joga pro login
         if (hashTela.includes('pratica') || hashTela === 'escolhaGrupo' || hashTela === 'resultadoGrupo') {
             telaDestino = grupoAtual ? hashTela : 'loginGrupo';
-        } 
+        }
         // Se tentar acessar área do professor sem estar logado na sessão, joga pro login
         else if (hashTela === 'menuProfessor' || hashTela === 'listaProfessor') {
             telaDestino = isProfLogado ? hashTela : 'loginProfessor';
@@ -490,9 +483,10 @@ function calcDeltaInterno(nominal, medido) {
     function voltarPagina() {
         // Check if we're in the system and can go back
         if (document.body.classList.contains('system-active')) {
-            // If we're at the initial screen, go back to landing
-            const inicioScreen = document.getElementById('inicio');
-            if (inicioScreen.classList.contains('ativa')) {
+            // If we're at the login screens, go back to landing
+            const loginProfessor = document.getElementById('loginProfessor');
+            const loginGrupo = document.getElementById('loginGrupo');
+            if (loginProfessor.classList.contains('ativa') || loginGrupo.classList.contains('ativa')) {
                 voltarParaLanding();
             } else {
                 window.history.back();
@@ -506,7 +500,7 @@ window.addEventListener('popstate', function(event) {
     if (event.state && event.state.tela) {
         mostrarTela(event.state.tela, true);
     } else {
-        mostrarTela('inicio', true);
+        mostrarTela('loginProfessor', true);
     }
 });
 
@@ -526,7 +520,7 @@ window.mostrarTela = function(id, vindoDoHistorico = false) {
 
     let btnTopo = document.getElementById("btnVoltarTopo");
     if (btnTopo) {
-        btnTopo.style.display = (id === 'inicio') ? 'none' : 'flex';
+        btnTopo.style.display = (id === 'loginProfessor' || id === 'loginGrupo') ? 'none' : 'flex';
     }
 };
 
